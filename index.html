@@ -12,8 +12,9 @@ window.onload = function() {
 
     httpRequest = new XMLHttpRequest();
 
-    // GET Request
-    let url = "request.php/?q=definition";
+    
+    let word = document.getElementById("word").value;
+    let url = "request.php/?q=" + word;
     httpRequest.onreadystatechange = loadDef;
     httpRequest.open('GET', url);
     httpRequest.send();
@@ -23,9 +24,8 @@ window.onload = function() {
     if (httpRequest.readyState === XMLHttpRequest.DONE) {
       if (httpRequest.status === 200) {
         let response = httpRequest.responseText;
-         let def = document.querySelector('#def');
+         let def = document.querySelector('#result');
          def.innerHTML = response;
-        alert(def.textContent || def.innerText);
       } else {
         alert('There was a problem with the request.');
       }
@@ -35,10 +35,14 @@ window.onload = function() {
 };
 </script>
 <body>
-
+    <form action="" method = "GET">
+    
+        <input type="text" name="word" id = "word"/>  </input>
+    
+    </form>
     <button id = 'search'>Search</button>
     
-    <blockquote id="def"></blockquote>
+    <div id = 'result'> </div>
     
 </body>
 </html>
