@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    
+<script>
+window.onload = function() {
+
+  let searchBtn = document.querySelector('#search');
+  let httpRequest;
+
+  searchBtn.addEventListener('click', function(element) {
+    element.preventDefault();
+
+    httpRequest = new XMLHttpRequest();
+
+    // GET Request
+    let url = "request.php/?q=definition";
+    httpRequest.onreadystatechange = loadDef;
+    httpRequest.open('GET', url);
+    httpRequest.send();
+  });
+
+  function loadDef() {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      if (httpRequest.status === 200) {
+        let response = httpRequest.responseText;
+         let def = document.querySelector('#def');
+         def.innerHTML = response;
+        alert(def.textContent || def.innerText);
+      } else {
+        alert('There was a problem with the request.');
+      }
+    }
+  }
+
+};
+</script>
+<body>
+
+    <button id = 'search'>Search</button>
+    
+    <blockquote id="def"></blockquote>
+    
+</body>
+</html>
