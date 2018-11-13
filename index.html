@@ -3,44 +3,76 @@
     
 <script>
 window.onload = function() {
-
   let searchBtn = document.querySelector('#search');
-  let httpRequest;
-
-  searchBtn.addEventListener('click', function(element) {
-    element.preventDefault();
-
-    httpRequest = new XMLHttpRequest();
-
-    
-    let word = document.getElementById("word").value;
-    let url = "request.php/?q=" + word;
-    httpRequest.onreadystatechange = loadDef;
-    httpRequest.open('GET', url);
-    httpRequest.send();
-  });
-
-  function loadDef() {
-    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-      if (httpRequest.status === 200) {
-        let response = httpRequest.responseText;
-         let def = document.querySelector('#result');
-         def.innerHTML = response;
-      } else {
-        alert('There was a problem with the request.');
-      }
+  
+  let allDef = document.querySelector('#all');
+  let result = document.querySelector('#result');
+  searchBtn.addEventListener("click", loadDef);
+  allDef.addEventListener("click", getAllDef);
+  
+  function loadDef (e){
+    e.preventDefault();
+    let word = document.getElementById('word').value;
+    if (word.length == 0) {result.innerHTML = "";}
+    else{
+      let httpRequest= new XMLHttpRequest();
+      httpRequest.onreadystatechange = function (){
+        if (httpRequest.readyState === XMLHttpRequest.DONE){
+          if (httpRequest.status === 200){
+            let wordList = httpRequest.responseXML.getElementsByTagName('definition');
+            for(let i=0;i<wordList.length;i++){
+              if (wordList[i].getAttribute('name').toString().trim()==word.toString().trim()){
+                document.getElementById('result').innerHTML ="<h3><strong>" + wordList[i].getAttribute('name').toUpperCase()+" </h3></strong> - "
+                                                              + wordList[i].getAttribute('author') + "<p>" + wordList[i].innerHTML + "</p>";
+                wordList[i].innerHTML;
+              }
+            }
+          }
+        }
+      };
+      
+      httpRequest.open('GET', "request.php",true);
+      httpRequest.send();
     }
   }
-
+  
+  function getAllDef(e){
+    e.preventDefault();
+    let httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange= function (){
+      if (httpRequest.readyState === XMLHttpRequest.DONE){
+        if (httpRequest.status === 200){
+          let response = httpRequest.responseXML;
+          let wordList = response.getElementsByTagName('definition');
+          let listDisp = document.createElement("ol");
+          for (let i = 0; i < wordList.length; i++) { 
+           let dispEle = document.createElement('li');
+           dispEle.innerHTML = "<h3><strong>" + wordList[i].getAttribute('name').toUpperCase()+" </h3></strong> - " + 
+                                wordList[i].getAttribute('author') + "<p>" + wordList[i].innerHTML + "</p>"
+           listDisp.append(dispEle); 
+          } 
+          result.append(listDisp);
+        }
+      }
+    }
+    httpRequest.open('GET', "request.php",true);
+    httpRequest.send();
+  }
 };
+
+
+
+
 </script>
 <body>
     <form action="" method = "GET">
     
         <input type="text" name="word" id = "word"/>  </input>
+        <button id = 'search'>Search</button>
+        <button id = 'all'>Get All Definitions</button>
     
     </form>
-    <button id = 'search'>Search</button>
+    
     
     <div id = 'result'> </div>
     
